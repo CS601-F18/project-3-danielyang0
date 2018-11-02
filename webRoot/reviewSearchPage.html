@@ -1,7 +1,63 @@
 <html>
     <head><title>review search</title></head>
     <body> 
-        <input type="text" placeholder="input the keyword to search"></input>
-        <input type="button">submit</input>
+        <!-- <input type="text" id="term" placeholder="input the keyword to search"></input>
+        <button onclick="onPostBtn()">Submit</button>
+        <input id="response"></input> -->
+        
+                            <form action='reviewsearch' method="post">
+                        <table width="515">
+                            <col width="120px" />
+                            <col />
+                            <tr>
+                                <th>term: </th>
+                                <td><input type="text" name="query"
+                                    id="term" placeholder="input term" /></td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td><input type="submit" value="search" /></td>
+                            </tr>
+                        </table>
+                    </form>
+        
     </body>
+    
+    
+<!--     <script type="text/javascript">
+    
+    function success(text) {
+        var response_text = document.getElementById('response');
+        response_text.value = 'Sent succesfully';
+    }
+
+    function fail(code) {
+        var response_text = document.getElementById('response');
+        response_text.value = 'Error code: ' + code;
+    }
+    
+    function onPostBtn() {
+    	var request = new XMLHttpRequest(); 
+        request.onreadystatechange = function () {
+            if (request.readyState === 4) { 
+                if (request.status === 200) {
+                    return success(request.responseText);
+                } else {
+                    return fail(request.status);
+                }
+            }
+            return;
+        };
+        request.open('POST', '/reviewsearch', true);
+        
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        var term = document.getElementById('term');
+        var data = encodeURIComponent(term.value) ;
+        console.log("query=" + data);
+        request.send("query=" + data);
+    } 
+    
+    
+    </script> -->
+    
 </html>

@@ -2,7 +2,8 @@ package cs601.project3;
 
 public class SearchApplication {
 	public static void main(String[] args) {
-		int port = 1024;
+		AmazonSearch.getInstance();
+		int port = 1028;
 		HTTPServer server = new HTTPServer(port);
 		//The request GET /reviewsearch will be dispatched to the 
 		//handle method of the ReviewSearchHandler.
@@ -12,4 +13,9 @@ public class SearchApplication {
 //		server.addMapping("/find", new FindHandler());
 		server.startup();
 	}
+	
+	
+	
+	
+	
 }

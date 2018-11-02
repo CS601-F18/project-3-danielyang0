@@ -1,6 +1,8 @@
-package cs601.project3;
+package cs601.project3.server;
 
 import java.io.OutputStream;
+
+import cs601.project3.StaticFileHandler;
 
 public class HttpResponse {
 
