@@ -3,6 +3,7 @@ package cs601.project3;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import cs601.project3.chat.ChatClient;
 import cs601.project3.server.HttpRequest;
 import cs601.project3.server.HttpResponse;
 
@@ -34,6 +35,15 @@ public class ReviewSearchHandler implements Handler{
 	public void doPost(HttpRequest req, HttpResponse resp) {
 		StaticFileHandler staticFileHandler = resp.getStaticFileHandler();
 		String term = req.getPostData().get("query");
+		
+//		ChatClient chatClient = new ChatClient();
+//		System.out.println(term);
+//		try {
+//			chatClient.sendMessage(term);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+		
 		AmazonSearch as = AmazonSearch.getInstance();
 		if(as == null) {
 			return;
