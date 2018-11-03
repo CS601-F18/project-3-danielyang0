@@ -8,7 +8,9 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
+import cs601.project3.handler.Handler;
 import cs601.project3.server.HttpRequest;
 import cs601.project3.server.HttpResponse;
 
@@ -21,7 +23,7 @@ public class StaticFileHandler implements Handler{
 	
 	//webRoot location on server
 	private String webRoot;
-	private String param;
+	private List<String> params;
 	
 
 	public StaticFileHandler(String webRoot) {
@@ -35,7 +37,7 @@ public class StaticFileHandler implements Handler{
 		PrintWriter pw = new PrintWriter(outputStream);
 		pw.write(resp.getResponseHeader());
 //		System.out.println(req.getPathInfo());
-		if(param == null) { 
+		if(params == null) { 
 			responseStaticFile(pw, webRoot+req.getPath());
 		}else{
 			responseStaticTemplete(pw, webRoot+req.getPath());
@@ -71,8 +73,13 @@ public class StaticFileHandler implements Handler{
 				) {
 			String line;
 			while((line = br.readLine()) != null) {
-				if(line.contains("{$0}")) {
-					line = line.replace("{$0}", param);
+				
+//				if(line.contains("{$0}")) {
+//					line = line.replace("{$0}", param);
+//				}
+				for(int i=0; i < params.size(); i++) {
+					String param = params.get(i);
+					line = line.replace("{$"+i+"}", param);
 				}
 				pw.write(line);
 			}
@@ -83,8 +90,8 @@ public class StaticFileHandler implements Handler{
 		pw.flush();
 	}
 
-	public void setParam(String param) {
-		this.param = param;
+	public void setParams(List<String> params) {
+		this.params = params;
 	}
 	
 

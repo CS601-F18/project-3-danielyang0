@@ -25,10 +25,14 @@ public class ChatClient {
 //	Authorization: Bearer xoxp-378520430422-399500190231-469474756640-3510da3d2f507e447bc3a8f0783ffdf1
 //	{"channel":"project3","text":"zun yang"}
 
+	
 	private static Logger logger = Logger.getLogger(ChatClient.class);
 	static {
 		PropertyConfigurator.configure("./config/log4j.properties");
 	}
+	
+	
+	//TO DO:  anything other than a 200 OK from the Slack API then you should send an appropriate reply to the client.
 	
 	public void sendMessage(String msg) throws Exception {
 

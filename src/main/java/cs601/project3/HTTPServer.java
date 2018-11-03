@@ -21,6 +21,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
+import cs601.project3.handler.Handler;
 import cs601.project3.server.HttpRequest;
 import cs601.project3.server.HttpResponse;
 
@@ -72,6 +73,7 @@ public class HTTPServer {
 		}
 	};
 
+	//TO DO: store in config
 
 	private class Connection extends Thread {
 		private Socket socket;
@@ -88,7 +90,7 @@ public class HTTPServer {
 			if(requestLines == null) return; 
 			String[] requestLineParts = requestLines.split("\\s+");
 			req.setMethod(requestLineParts[0]);
-			req.setPath(requestLineParts[1]);
+			req.setPath(requestLineParts[1].split("\\?")[0]);
 			req.setProtocol(requestLineParts[2]);
 			String line = br.readLine();
 			StringBuffer headLines = new StringBuffer();
@@ -136,7 +138,7 @@ public class HTTPServer {
 				if(!req.isMethodSupported()) {
 					logger.warn(req.getMethod() + " method is not supported! ");
 					req.setMethod("GET");
-					req.setPath(URL_ERROR_PAGE);
+					req.setPath(METHODE_NOT_ALLOWED_PAGE);
 					resp.setResponseHeader("HTTP/1.1 405 Method Not Allowed\n\r\n");
 					staticFileHandler.handle(req, resp);
 					return;

@@ -1,4 +1,4 @@
-package cs601.project3;
+package cs601.project3.handler;
 
 import cs601.project3.server.HttpRequest;
 import cs601.project3.server.HttpResponse;
