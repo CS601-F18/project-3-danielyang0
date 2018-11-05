@@ -4,20 +4,20 @@
         <!-- <input type="text" id="term" placeholder="input the keyword to search"></input>
         <button onclick="onPostBtn()">Submit</button>
         <input id="response"></input> -->
-        <h1>find search</h1>
+        <h1>send messages to slack channel</h1>
 
-        <form action='find' method="post">
+        <form action='slackbot' method="post">
             <table width="515">
                 <col width="120px" />
                 <col />
                 <tr>
-                    <th>term: </th>
-                    <td><input type="text" name="asin"
-                        id="term" placeholder="input asin" /></td>
+                    <th>Message: </th>
+                    <td><input type="text" name="message"
+                        id="term" placeholder="input message" /></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td><input type="submit" value="find" /></td>
+                    <td><input type="submit" value="chat" /></td>
                 </tr>
             </table>
         </form>

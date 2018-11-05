@@ -7,14 +7,17 @@
         
         <h1>review search</h1>
 
-        <form action='reviewsearch' method="post">
+        <!--  enctype="application/x-www-form-urlencoded;charset=UTF-8"  -->
+        <!-- first turn data into html codes , ex."&#dec number" -->
+        <!-- then encode it and post it -->
+        <form action='reviewsearch' method="post" enctype="application/x-www-form-urlencoded;charset=UTF-8>
             <table width="515">
                 <col width="120px" />
                 <col />
                 <tr>
                     <th>term: </th>
                     <td><input type="text" name="query"
-                        id="term" placeholder="input term" /></td>
+                        id="query" placeholder="input term" /></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -25,6 +28,24 @@
         
     </body>
     
+
+<!-- <script type="text/javascript"> 
+    function onPostBtn() {
+        var query = document.getElementById('query');
+        var encodedData = encodeURIComponent(query.value) ;
+        formBody = "query="+encodedData;
+
+        fetch('reviewsearch', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+        },
+        body: formBody
+        })
+    }
+
+</script> -->
+
 
 <!--     <script type="text/javascript">
     
@@ -53,7 +74,7 @@
         request.open('POST', '/reviewsearch', true);
         
         request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        var term = document.getElementById('term');
+        var term = document.getElementById('query');
         var data = encodeURIComponent(term.value) ;
         console.log("query=" + data);
         request.send("query=" + data);

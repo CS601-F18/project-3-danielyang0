@@ -51,28 +51,28 @@ public class ReviewSearchHandler implements Handler{
 	
 	public void doPost(HttpRequest req, HttpResponse resp) {
 		StaticFileHandler staticFileHandler = resp.getStaticFileHandler();
-		String term = req.getPostData().get("query");
-		
-//		ChatClient chatClient = new ChatClient();
-//		System.out.println(term);
-//		try {
-//			chatClient.sendMessage(term);
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-		
+		String terms = req.getPostData().get("query");
+
 		AmazonSearch as = AmazonSearch.getInstance();
 		if(as == null) {
 			return;
 		}
 		
 //		staticFileHandler.setParam(as.getSearchResults(term).replace("\n", "<br>"));
-		List<String[]> searchedresultsdata = as.getSearchResults(term);
-		String[] strings = searchedresultsdata.remove(0);
+		String[] splited = terms.split("\\s+");
 		String title = "";
-		if(strings.length > 0) {
-			title = strings[0];
+		List<String[]> searchedresultsdata = new ArrayList<>();
+		for (String term : splited) {
+			List<String[]> res = as.getSearchResults(term);
+			String[] strings = res.remove(0);
+			if(strings.length > 0) {
+				title += strings[0]+"<br>";
+			}
+			for (String[] s : res) {
+				searchedresultsdata.add(s);
+			}
 		}
+		
 		List<String> params = new ArrayList<>();
 		params.add(title);
 		params.add(generateTableTr(searchedresultsdata));

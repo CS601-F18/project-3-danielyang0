@@ -51,19 +51,29 @@ public class FindHandler implements Handler{
 	
 	public void doPost(HttpRequest req, HttpResponse resp) {
 		StaticFileHandler staticFileHandler = resp.getStaticFileHandler();
-		String asin = req.getPostData().get("asin");
+		String asins = req.getPostData().get("asin");
 		
 		AmazonSearch as = AmazonSearch.getInstance();
+		
 		if(as == null) {
 			return;
 		}
 		
-		List<String[]> foundresultsdata = as.getFindResults(asin);
-		String[] strings = foundresultsdata.remove(0);
+		String[] splited = asins.split("\\s+");
+		
 		String title = "";
-		if(strings.length > 0) {
-			title = strings[0];
+		List<String[]> foundresultsdata = new ArrayList<>();
+		for (String asin : splited) {
+			List<String[]> res = as.getFindResults(asin);
+			String[] strings = res.remove(0);
+			if(strings.length > 0) {
+				title += strings[0]+"<br>";
+			}
+			for (String[] s : res) {
+				foundresultsdata.add(s);
+			}
 		}
+
 		List<String> params = new ArrayList<>();
 		params.add(title);
 		params.add(generateTableTr(foundresultsdata));

@@ -1,9 +1,16 @@
 package cs601.project3.server;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+
+import cs601.project3.HTTPServer;
 
 public class HttpRequest {
 
@@ -15,18 +22,44 @@ public class HttpRequest {
 	private Map<String, String> postData;
 	private static List<String> supportedHttpMethod = new ArrayList<>();
 	
+	private static Logger logger = Logger.getLogger(HttpRequest.class);
+	static {
+		PropertyConfigurator.configure("./config/log4j.properties");
+	}
 	
 	public HttpRequest() {
 		super();
 		postData = new HashMap<>();
 	}
 
+	public static String decodeUrl(String encodedString) throws UnsupportedEncodingException {
+		return URLDecoder.decode(encodedString, "UTF-8");
+	}
+	
 	public void setPostData(String postDataStr) {
 		String[] kvs = postDataStr.split("&");
 		for (String kv : kvs) {
 			String[] splited = kv.split("=");
 			if(splited.length == 2) {
-				postData.put(splited[0], splited[1]);
+				String decodedKey = null;
+				String decodedValue = null;
+				try {
+					decodedKey = decodeUrl(splited[0]);
+					decodedValue = decodeUrl(splited[1]);
+				} catch (UnsupportedEncodingException e) {
+				}
+				
+				if(decodedKey == null) {
+					logger.warn("post data" + splited[0] + "decode url failed!");
+				}
+				if(decodedValue == null) {
+					logger.warn("post data" + splited[1] + "decode url failed!");
+				}
+				if(decodedKey == null || decodedValue == null) {
+					break;
+				}
+				System.out.println("//////////" + decodedKey + ": "+decodedValue);
+				postData.put(decodedKey, decodedValue);
 			}
 		}
 	}

@@ -9,19 +9,6 @@ import cs601.project3.amazonSearch.model.QADocument;
 import cs601.project3.amazonSearch.model.ReviewDocument;
 
 public class AmazonSearchFactory {
-	/**
-	 * create AmazonSearch object, initiate its databases, if file name error, return null
-	 * @param qaFileName
-	 * @param reviewFileName
-	 * @return the initiated AmazonSearch object or null if file name is incorrect.
-	 */
-	public static AmazonSearch buildAmazonSearch(String qaFileName, String reviewFileName) {
-		AmazonSearch searchEngine = new AmazonSearch();
-		if(initDatabases(searchEngine, qaFileName, reviewFileName)){
-			return searchEngine;
-		}
-		return null;
-	}
 	
 	/**
 	 * initiate two inverted index databases
@@ -29,7 +16,7 @@ public class AmazonSearchFactory {
 	 * @param reviewFileName
 	 * @return whether initiation is successful
 	 */
-	private static boolean initDatabases(AmazonSearch engine, String qaFileName, String reviewFileName) {
+	public static boolean initDatabases(AmazonSearch engine, String qaFileName, String reviewFileName) {
 		InvertedIndex<QADocument> qaDatabase = initAmazonSearchDatabase(qaFileName, QADocument.class);
 		if(qaDatabase == null) {
 			return false;

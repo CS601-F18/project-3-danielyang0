@@ -20,6 +20,7 @@ import cs601.project3.amazonSearch.model.QADocument;
 import cs601.project3.amazonSearch.model.ReviewDocument;
 import cs601.project3.amazonSearch.tools.AmazonSearchFactory;
 import cs601.project3.amazonSearch.tools.StringHelper;
+import cs601.project3.tools.PropertyReader;
 
 /**
  * the class for reading amazon data files, and executing command including find, search, partial search,etc
@@ -34,54 +35,55 @@ public class AmazonSearch {
 	
 	private InvertedIndex<QADocument> qaDatabase;//question/answer Inverted Index database
 	private InvertedIndex<ReviewDocument> reviewDatabase;//review Inverted Index database
-
-	private static volatile boolean initated = false;
-	
 	private static AmazonSearch instance;
 	
-	static Thread t = new Thread() {
-		@Override
-		public synchronized void run() {
-			if(initated) return;
-			AmazonSearch.setSourceFile("qa.json","review.json");
-			//initiate
-			instance = AmazonSearchFactory.buildAmazonSearch(qaFileName, reviewFileName);
+	
+	private AmazonSearch() {
+		super();
+		PropertyReader reader = new PropertyReader("./config","database.properties");
+		this.qaFileName = reader.readStringValue("qaFile", "qa1.json");
+		this.reviewFileName = reader.readStringValue("reviewFile", "review1.json");
+	}
+	
+	/**
+	 * create AmazonSearch object, initiate its databases, if file name error, return null
+	 * @return the initiated AmazonSearch object or null if file name is incorrect.
+	 */
+	private static AmazonSearch buildAmazonSearch() {
+		AmazonSearch searchEngine = new AmazonSearch();
+		if(AmazonSearchFactory.initDatabases(searchEngine, searchEngine.qaFileName, searchEngine.reviewFileName)){
 			logger.info("amazon search database initiated!");
-			initated = true;
+			return searchEngine;
 		}
-	};
+		logger.info("amazon search database initiation failed!");
+		return null;
+	}
 	
+	//singleton with double checked locking approach guarantees thread safe
 	public static AmazonSearch getInstance() {
-		if(instance != null) return instance;
-		//build search engine by initiating databases, if there is file name error, program exit
-		t.start();
+		if(instance == null) {
+			synchronized (AmazonSearch.class) {
+				if (instance == null) {
+					instance = buildAmazonSearch();
+				}
+			}
+		}
 		return instance;
-		
 	}
 	
-	private static String qaFileName;
-	private static String reviewFileName;
-
-	public static void setSourceFile(String qaFile, String reviewFile){
-		AmazonSearch.qaFileName = qaFile;
-		AmazonSearch.reviewFileName = reviewFile;
-	}
-
-	//TO DO: thread safe
+	private String qaFileName;
+	private String reviewFileName;
 
 	public List<String[]> getSearchResults(String term) {
-		//		Iterator<String> displayIter = AmazonSearchUI.showFindResults(find(param,qaDatabase), find(param,reviewDatabase));
 		Iterator<String> displayIter = AmazonSearchUI.showSearchResults(term, search(term, reviewDatabase));
 		return toList(displayIter, Integer.MAX_VALUE);
-//		return lesss(displayIter, 5);
 	}
 	
 	
 	public List<String[]> getFindResults(String term) {
-		Iterator<String> displayIter = AmazonSearchUI.showFindResults(find(term,qaDatabase), find(term,reviewDatabase));
+		Iterator<String> displayIter = AmazonSearchUI.showFindResults(term, find(term,qaDatabase), find(term,reviewDatabase));
 		return toList(displayIter, Integer.MAX_VALUE);
 	}
-	
 	
 	public List<String[]> toList(Iterator<String> iter, int linesPerPage){
 		List<String[]> results = new ArrayList<>();
@@ -109,9 +111,9 @@ public class AmazonSearch {
 		StringBuffer sb = new StringBuffer();
 		int count = 0;
 		while(iter.hasNext()){
-//			if(count > 0 && count % linesPerPage == 0) {
-//				return sb.toString();
-//			}
+			if(count > 0 && count % linesPerPage == 0) {
+				return sb.toString();
+			}
 			String line = iter.next();
 			sb.append(line).append("\n");
 			count++;

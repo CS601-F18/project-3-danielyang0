@@ -35,7 +35,6 @@ public class ChatClient {
 	//TO DO:  anything other than a 200 OK from the Slack API then you should send an appropriate reply to the client.
 	
 	public void sendMessage(String msg) throws Exception {
-
 		//create URL object
 		URL url = new URL("https://slack.com/api/chat.postMessage");
 
@@ -48,7 +47,7 @@ public class ChatClient {
 		connection.setRequestProperty("Content-Type", "application/json");
 		JsonObject postData = new JsonObject();
 		postData.addProperty("channel","project3");
-		postData.addProperty("text","test:" + msg);
+		postData.addProperty("text",msg);
 		
 //		connection.setRequestProperty("Content-Length", "" + postData.toString().getBytes().length);
 //		https://www.mkyong.com/java/how-to-send-http-request-getpost-in-java/

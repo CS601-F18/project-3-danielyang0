@@ -81,9 +81,9 @@ public class AmazonSearchUI {
 	 * @param rvs
 	 * @return
 	 */
-	public static Iterator<String> showFindResults(List<QADocument> qas, List<ReviewDocument> rvs){
+	public static Iterator<String> showFindResults(String term, List<QADocument> qas, List<ReviewDocument> rvs){
 		if((qas.size() == 0) && rvs.size() == 0){
-			return iteratorForAListOfOneString("no results found on this asin.");
+			return iteratorForAListOfOneString("no results found on asin: "+term);
 		}
 		Iterator<QADocument> qaIter = qas.iterator();
 		Iterator<ReviewDocument> reviewIter = rvs.iterator();
@@ -100,12 +100,12 @@ public class AmazonSearchUI {
 			public String next() {
 				if(!qaTitleShown){
 					qaTitleShown = true;
-					return "=============" + qas.size() + " question/answer results for designated asin ===============";
+					return "=============" + qas.size() + " question/answer results for asin: "+ term + " ===============";
 				}else if(qaIter.hasNext()){
 					return showSummary(qaIter.next().summary());
 				}else if(!reviewTitleShown){
 					reviewTitleShown = true;
-					return "=============" + rvs.size() + " review results for designated asin ===============";
+					return "=============" + rvs.size() + " review results for asin: " + term +" ===============";
 				}else{
 					return showSummary(reviewIter.next().summary());
 				}
@@ -121,7 +121,7 @@ public class AmazonSearchUI {
 	 */
 	public static <T extends AmazonDocument> Iterator<String> showSearchResults(String token, ListOfDocsWithFreqs<T> docs) {
 		if(docs == null) {
-			return iteratorForAListOfOneString("no results found on keyword: " + token);
+			return iteratorForAListOfOneString("no results found for keyword: " + token);
 		}
 		Iterator<ListOfDocsWithFreqs<T>.DocWithFreq> iter = docs.getIterator();
 		Iterator<String> searchResultsIter = new Iterator<String>() {
@@ -134,7 +134,7 @@ public class AmazonSearchUI {
 			public String next() {
 				if(!titleShown) {
 					titleShown = true;
-					return "found " + docs.size() + " document(s)";
+					return "found " + docs.size() + " document(s) for keyword " + token;
 				}
 				ListOfDocsWithFreqs<T>.DocWithFreq docWithFreq = iter.next();
 				return "\"" + token + "\" appeared " + docWithFreq.getFreq() + " times in:\n" + showSummary(docWithFreq.getDoc().summary());
