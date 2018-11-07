@@ -17,16 +17,6 @@ channel=project3
 
 
 
-## Test
+## other Test
 
-### Unit tests
-
-​	validate
-
-### Integration Tests
-
-​	mock slack 
-
-### System Tests
-
-​	Postman test:
+​use Postman 
