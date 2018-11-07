@@ -40,7 +40,7 @@ public class AmazonSearch {
 	
 	private AmazonSearch() {
 		super();
-		PropertyReader reader = new PropertyReader("./config","database.properties");
+		PropertyReader reader = new PropertyReader("./config","project3.properties");
 		this.qaFileName = reader.readStringValue("qaFile", "qa1.json");
 		this.reviewFileName = reader.readStringValue("reviewFile", "review1.json");
 	}

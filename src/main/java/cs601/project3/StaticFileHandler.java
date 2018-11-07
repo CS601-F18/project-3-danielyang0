@@ -25,7 +25,6 @@ public class StaticFileHandler implements Handler{
 	private String webRoot;
 	private List<String> params;
 	
-
 	public StaticFileHandler(String webRoot) {
 		this.webRoot = webRoot;
 	}
@@ -36,14 +35,13 @@ public class StaticFileHandler implements Handler{
 		OutputStream outputStream = resp.getOutputStream();
 		PrintWriter pw = new PrintWriter(outputStream);
 		pw.write(resp.getResponseHeader());
-//		System.out.println(req.getPathInfo());
 		if(params == null) { 
 			responseStaticFile(pw, webRoot+req.getPath());
 		}else{
 			responseStaticTemplete(pw, webRoot+req.getPath());
 		}
-
 	}
+	
 	
 	/**
 	 * read static file, and write to client
@@ -57,7 +55,7 @@ public class StaticFileHandler implements Handler{
 				) {
 			String line;
 			while((line = br.readLine()) != null) {
-				pw.write(line);
+				pw.write(line+"\n");
 			}
 		} catch(IOException e){
 			System.out.println(Paths.get(filePath));

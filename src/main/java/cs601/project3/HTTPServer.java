@@ -26,26 +26,21 @@ import cs601.project3.server.HttpRequest;
 import cs601.project3.server.HttpResponse;
 
 
-
 public class HTTPServer {
 	private static boolean running = true;	
 	private int port;
+	private final String webRoot;
 	public Map<String,Handler> handlers = new HashMap<>();
-	private static final String BASE = "webRoot";
-	public static final StaticFileHandler staticFileHandler = new StaticFileHandler(BASE);
 
 	private static Logger logger = Logger.getLogger(HTTPServer.class);
 	static {
 		PropertyConfigurator.configure("./config/log4j.properties");
 	}
 
-	public HTTPServer(int port) {
+	public HTTPServer(int port, String webRoot) {
 		super();
 		this.port = port;
-		List<String> supportedHttpMethod = new ArrayList<>();
-		supportedHttpMethod.add("GET");
-		supportedHttpMethod.add("POST");
-		HttpRequest.setSupportedHttpMethod(supportedHttpMethod);
+		this.webRoot = webRoot;
 	}
 	public void addMapping(String path, Handler handler){
 		handlers.put(path, handler);
@@ -63,8 +58,8 @@ public class HTTPServer {
 		while(running){
 			try{
 				Socket socket = server.accept();
-				socket.setSoTimeout(3000);
-				new HttpConnection(socket, id++, handlers).start();
+				socket.setSoTimeout(30000);
+				new HttpConnection(socket, id++, handlers, webRoot).start();
 			}catch(IOException ioe) {
 				ioe.printStackTrace();
 			}

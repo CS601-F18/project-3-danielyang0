@@ -5,8 +5,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -31,10 +33,10 @@ public class ChatClient {
 		PropertyConfigurator.configure("./config/log4j.properties");
 	}
 	
-	
 	//TO DO:  anything other than a 200 OK from the Slack API then you should send an appropriate reply to the client.
-	
-	public void sendMessage(String msg) throws Exception {
+	public String sendMessage(String msg) throws IOException{
+//		String encodedMsg = URLEncoder.encode(msg, "UTF-8");
+		logger.debug("prepare to send message to slack: " + msg);
 		//create URL object
 		URL url = new URL("https://slack.com/api/chat.postMessage");
 
@@ -62,35 +64,64 @@ public class ChatClient {
 	    logger.info("\nSending 'POST' request to URL : " + url);
 	    logger.info("Post parameters : " + postData);
 	    logger.info("Response Code : " + responseCode);
-	    logger.debug("============Headers: =============");
-		printHeaders(connection);
-		logger.debug("============Body: =============");
-		printBody(connection);
-	    
-
+	    logger.debug("============slack response Headers: =============");
+		boolean ok200 = printHeaders(connection);
+		logger.debug("============slack reponse Body: =============");
+		String errorMsg = printBody(connection);
+		if(!ok200) {
+			return "1";
+		}
+		if(!errorMsg.equals("0")) {
+			return errorMsg;
+		}
+		return "0";
 	}
 
-	public static void printHeaders(URLConnection connection) {
+	public static boolean printHeaders(URLConnection connection) {
 		Map<String,List<String>> headers = connection.getHeaderFields();
-		for(String key: headers.keySet()) {
-			logger.debug(key+":\t");
-			List<String> values = headers.get(key);
-			for(String value: values) {
-				logger.debug("\t" + value);
-			}
-		}		
+		logger.debug(headers);
+		List<String> statusList = headers.get(null);
+		if(statusList != null && statusList.size() > 0 && "HTTP/1.1 200 OK".equals(statusList.get(0))) {
+			return true;
+		}
+		return false;
+//		for(String key: headers.keySet()) {
+//			logger.debug(key+":\t");
+//			List<String> values = headers.get(key);
+//			for(String value: values) {
+//				logger.debug("\t" + value);
+//			}
+//		}
 	}
 
-	public static void printBody(URLConnection connection) throws IOException {
+	public static String printBody(URLConnection connection) throws IOException {
 		BufferedReader reader = new BufferedReader(
 				new InputStreamReader(connection.getInputStream()));
+		StringBuffer sb = new StringBuffer();
 		String line;
 		while((line = reader.readLine()) != null) {
 			logger.debug(line);
+			sb.append(line).append("\n");
 		}
 		reader.close();
+		
+		String[] kvs = sb.toString().split(",");
+		String errorMsg = null;
+		boolean isError = false;
+		for (String kvStr : kvs) {
+			String[] kv = kvStr.split(":");
+			if(kv[0].trim().equals("{\"ok\"") || kv[0].trim().equals("\"ok\"")) {
+				if(kv[1].equals("false")) {
+					isError = true;
+				}
+			}else if(kv[0].trim().equals("{\"error\"") || kv[0].trim().equals("\"error\"")) {
+				errorMsg = kv[1];
+			}
+			if(isError && errorMsg != null) {
+				return errorMsg;
+			}
+		}
+		return "0";
 	}
-	
-	
 	
 }

@@ -1,15 +1,22 @@
+<!DOCTYPE html>
 <html>
-    <head><title>review search</title></head>
+    <head>
+    <meta charset="UTF-8" />
+        <title>slackbot chat</title>
+        <style>
+            table {
+                font-family: arial, sans-serif;
+                border-collapse: collapse;
+                width: 50%;
+            }
+               
+        </style>
+    </head>
     <body> 
-        <!-- <input type="text" id="term" placeholder="input the keyword to search"></input>
-        <button onclick="onPostBtn()">Submit</button>
-        <input id="response"></input> -->
-        <h1>send messages to slack channel</h1>
+        <h1>Send Messages To Slack Channel: project 3</h1>
 
         <form action='slackbot' method="post">
-            <table width="515">
-                <col width="120px" />
-                <col />
+            <table>
                 <tr>
                     <th>Message: </th>
                     <td><input type="text" name="message"
@@ -21,44 +28,7 @@
                 </tr>
             </table>
         </form>
-        
+        {$0}
     </body>
-    
-
-<!--     <script type="text/javascript">
-    
-    function success(text) {
-        var response_text = document.getElementById('response');
-        response_text.value = 'Sent succesfully';
-    }
-
-    function fail(code) {
-        var response_text = document.getElementById('response');
-        response_text.value = 'Error code: ' + code;
-    }
-    
-    function onPostBtn() {
-    	var request = new XMLHttpRequest(); 
-        request.onreadystatechange = function () {
-            if (request.readyState === 4) { 
-                if (request.status === 200) {
-                    return success(request.responseText);
-                } else {
-                    return fail(request.status);
-                }
-            }
-            return;
-        };
-        request.open('POST', '/reviewsearch', true);
-        
-        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-        var term = document.getElementById('term');
-        var data = encodeURIComponent(term.value) ;
-        console.log("query=" + data);
-        request.send("query=" + data);
-    } 
-    
-    
-    </script> -->
     
 </html>

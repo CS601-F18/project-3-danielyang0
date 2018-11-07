@@ -1,43 +1,32 @@
+<!DOCTYPE html>
 <html>
-    <head><title>review search results</title></head>
-    <!-- https://www.w3schools.com/html/tryit.asp?filename=tryhtml_table_intro -->
+    <head>
+    <meta charset="UTF-8" />
+        <title>find asin search results</title>
         <style>
-        table {
-            font-family: arial, sans-serif;
-            border-collapse: collapse;
-            width: 100%;
-        }
-        
-        td, th {
-            border: 1px solid #dddddd;
-            text-align: left;
-            padding: 8px;
-        }
-        
-        tr:nth-child(even) {
-            background-color: #dddddd;
-        }
-        </style>
+                table {
+                    font-family: arial, sans-serif;
+                    border-collapse: collapse;
+                    width: 100%;
+                }
+                
+                td, th {
+                    border: 1px solid #dddddd;
+                    text-align: left;
+                    padding: 8px;
+                }
+                
+                tr:nth-child(even) {
+                    background-color: #dddddd;
+                }
+            </style>
+    </head>
+       
     <body> 
     
-        <h1>Review Search Results</h1>
-        <h2>{$0}</h2>
-        <table>
-          <!-- <tr>
-              <th>ASIN</th>
-              <th>REVIEWERID</th>
-              <th>Appeared Times</th>
-              <th>REVIEWTEXT</th>
-          </tr> -->
-          {$1}
-        </table>
-        <!-- <button onclick="nextpage()">next</button> -->
+        <h1>Review Search Results for input: {$0}</h1>
+        {$1}
+        
     </body>
-
-    <script type="text/javascript">
-        function nextpage() {
-        }
-    
-    </script>
 
 </html>

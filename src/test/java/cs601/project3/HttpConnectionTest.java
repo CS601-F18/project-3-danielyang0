@@ -9,6 +9,12 @@ import cs601.project3.server.HttpRequest;
 
 public class HttpConnectionTest {
 	
+	
+	
+	public void testParseReqInfo() {
+		
+	}
+	
 	private String encodeUrl(String s) throws UnsupportedEncodingException {
 		String encoded = URLEncoder.encode(s, "UTF-8");
 		System.out.println(encoded);
