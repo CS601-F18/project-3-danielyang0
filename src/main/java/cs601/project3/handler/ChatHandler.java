@@ -64,7 +64,7 @@ public class ChatHandler implements Handler{
 //		req.setPath("/chat.html");
 //		resp.setResponseHeader("HTTP/1.0 200 OK\nConnection: close\n\r\n");
 //		staticFileHandler.handle(req, resp);
-		HttpConnection.turnToStaticFile200OK(resp, "/chat.html", staticFileHandler);
+		HttpConnection.turnToStaticFile200OK(req, resp, "/chat.html", staticFileHandler);
 	}
 	
 	/**
@@ -105,6 +105,6 @@ public class ChatHandler implements Handler{
 		params.add(display);
 		StaticFileHandler sfHandler = new StaticFileHandler(webRoot);
 		sfHandler.setParams(params);
-		HttpConnection.turnToStaticFile200OK(resp, "/chat.html", sfHandler);
+		HttpConnection.turnToStaticFile200OK(req, resp, "/chat.html", sfHandler);
 	}
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -66,12 +67,13 @@ public class HttpConnection extends Thread {
 		sfHandler.handle(req, resp);
 	}
 	
-	public static void turnToStaticFile200OK(HttpResponse resp, String filePath, StaticFileHandler sfHandler) {
+	public static void turnToStaticFile200OK(HttpRequest originalRequest, HttpResponse resp, String filePath, StaticFileHandler sfHandler) {
 		HttpRequest req = new HttpRequest();
 		req.setMethod("GET");
 		req.setPath(filePath);
 		resp.setResponseHeader("HTTP/1.1 200 OK\nConnection: close\n\r\n");
 		sfHandler.handle(req, resp);
+		logger.warn(">>>>>>>>"+originalRequest.getRequestLines() + " " +originalRequest.getPostData() + " 200 OK");
 	}
 
 	@Override
@@ -82,13 +84,13 @@ public class HttpConnection extends Thread {
 			HttpRequest req = new HttpRequestBuilder().parseRequest(instream);
 			HttpResponse resp = new HttpResponse(socket.getOutputStream());
 			if(!req.isValid()) {
-				logger.warn(req.getMethod() + " request invalid, 400 bad request");
 				turnTo400Page(resp, staticFileHandler);
+				logger.warn(">>>>>>>>"+req.getRequestLines() + " " +req.getPostData() + " 400 Bad request!");
 				return;
 			}
 			if(!req.isMethodSupported()) {
-				logger.warn(req.getMethod() + " method is not supported! ");
 				turnTo405Page(resp, staticFileHandler);
+				logger.warn(">>>>>>>>"+req.getRequestLines() + " " +req.getPostData() + "405 Method not supported!");
 				return;
 			}
 			Handler handler = handlers.get(req.getPath());
@@ -96,6 +98,7 @@ public class HttpConnection extends Thread {
 				handler.handle(req, resp);
 			}else{
 				turnTo404Page(resp, staticFileHandler);
+				logger.warn(">>>>>>>>"+req.getRequestLines() + " " +req.getPostData() + " 404 not found!");
 				return;
 			}
 		}catch(IOException e) {

@@ -255,10 +255,10 @@ public class HttpRequest {
 		logger.info("splited key values into map:\n" + res);
 		return res;
 	}
-	
 	public boolean isMethodSupported() {
-		logger.info(getMethod() + " method not supported");
-		return supportedHttpMethod.contains(method);
+		boolean supported = supportedHttpMethod.contains(method);
+		if(!supported) logger.info(getMethod() + " method not supported");
+		return supported;
 	}
 	
 	public boolean getKeepAlive() {

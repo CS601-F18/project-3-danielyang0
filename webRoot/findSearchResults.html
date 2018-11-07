@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
     <meta charset="UTF-8" />
         <title>find asin search results</title>
@@ -26,7 +26,28 @@
     
         <h1>Review Search Results for input: {$0}</h1>
         {$1}
-        
+        {$2}
+        <script type="text/javascript">
+            function jsPost (term, pageNum) {
+                var form = document.createElement('form');
+                form.setAttribute('method', 'post');
+                form.setAttribute('action', 'find');
+                form.style.display = 'hidden';
+                var query = document.createElement('input');
+                query.setAttribute('name', 'asin');
+                query.setAttribute("type", "hidden");
+                query.setAttribute("value", term);
+                form.appendChild(query);
+                var page = document.createElement('input');
+                page.setAttribute('name', 'page');
+                page.setAttribute("type", "hidden");
+                page.setAttribute("value", pageNum);
+                form.appendChild(page);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        </script>
+    
     </body>
 
 </html>
