@@ -20,39 +20,50 @@ import org.apache.log4j.PropertyConfigurator;
 import com.google.gson.JsonObject;
 
 import cs601.project3.HTTPServer;
+import cs601.project3.tools.PropertyReader;
 
+/**
+ * a client for sending a message to slack channel by calling slack API
+ * @author yangzun
+ *
+ */
 public class ChatClient {
-//  POST https://slack.com/api/chat.postMessage
-//	Content-type: application/json
-//	Authorization: Bearer xoxp-378520430422-399500190231-469474756640-3510da3d2f507e447bc3a8f0783ffdf1
-//	{"channel":"project3","text":"zun yang"}
-
-	
 	private static Logger logger = Logger.getLogger(ChatClient.class);
+	private static PropertyReader reader;
 	static {
 		PropertyConfigurator.configure("./config/log4j.properties");
+		reader = new PropertyReader("./config","project3.properties");
 	}
 	
-	//TO DO:  anything other than a 200 OK from the Slack API then you should send an appropriate reply to the client.
+	/**
+	 * send message using slack API
+	 * @param msg
+	 * @return "0" if success, "1" if not 200 OK, error message if 200 OK but error happens
+	 * @throws IOException
+	 */
 	public String sendMessage(String msg) throws IOException{
-//		String encodedMsg = URLEncoder.encode(msg, "UTF-8");
 		logger.debug("prepare to send message to slack: " + msg);
+		//POST https://slack.com/api/chat.postMessage
+		//Content-type: application/json
+		//Authorization: Bearer xoxp-378520430422-399500190231-469474756640-3510da3d2f507e447bc3a8f0783ffdf1
+		//{"channel":"project3","text":"zun yang"}
+		
 		//create URL object
-		URL url = new URL("https://slack.com/api/chat.postMessage");
-
+		URL url = new URL(reader.readStringValue("slackPostMsgUrl", "https://slack.com/api/chat.postMessage"));
+		
 		//create secure connection 
 		HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
 		//set HTTP method
 		connection.setRequestMethod("POST");
-
-		connection.setRequestProperty("Authorization", "Bearer xoxp-378520430422-399500190231-469474756640-3510da3d2f507e447bc3a8f0783ffdf1");
+		
+		connection.setRequestProperty("Authorization", reader.readStringValue("slackAuth", "Bearer xoxp-378520430422-399500190231-469474756640-3510da3d2f507e447bc3a8f0783ffdf1"));
 		connection.setRequestProperty("Content-Type", "application/json");
 		JsonObject postData = new JsonObject();
-		postData.addProperty("channel","project3");
+		postData.addProperty("channel",reader.readStringValue("channel", "project3"));
+		//no need to encode message explicitly
 		postData.addProperty("text",msg);
 		
-//		connection.setRequestProperty("Content-Length", "" + postData.toString().getBytes().length);
-//		https://www.mkyong.com/java/how-to-send-http-request-getpost-in-java/
+		//https://www.mkyong.com/java/how-to-send-http-request-getpost-in-java/
 		connection.setDoOutput(true);
 		DataOutputStream dos = new DataOutputStream(connection.getOutputStream());
 		OutputStreamWriter outputStream = new OutputStreamWriter(dos,"UTF-8");
@@ -65,9 +76,9 @@ public class ChatClient {
 	    logger.info("Post parameters : " + postData);
 	    logger.info("Response Code : " + responseCode);
 	    logger.debug("============slack response Headers: =============");
-		boolean ok200 = printHeaders(connection);
+		boolean ok200 = logHeadersAndCheckIfOK(connection);
 		logger.debug("============slack reponse Body: =============");
-		String errorMsg = printBody(connection);
+		String errorMsg = logBody(connection);
 		if(!ok200) {
 			return "1";
 		}
@@ -77,7 +88,12 @@ public class ChatClient {
 		return "0";
 	}
 
-	public static boolean printHeaders(URLConnection connection) {
+	/**
+	 * log reponse header and return if the status code is 200 OK
+	 * @param connection
+	 * @return
+	 */
+	private static boolean logHeadersAndCheckIfOK(URLConnection connection) {
 		Map<String,List<String>> headers = connection.getHeaderFields();
 		logger.debug(headers);
 		List<String> statusList = headers.get(null);
@@ -85,16 +101,15 @@ public class ChatClient {
 			return true;
 		}
 		return false;
-//		for(String key: headers.keySet()) {
-//			logger.debug(key+":\t");
-//			List<String> values = headers.get(key);
-//			for(String value: values) {
-//				logger.debug("\t" + value);
-//			}
-//		}
 	}
 
-	public static String printBody(URLConnection connection) throws IOException {
+	/**
+	 * log response body, and return error message if error happens, otherwise return "0"
+	 * @param connection
+	 * @return
+	 * @throws IOException
+	 */
+	private static String logBody(URLConnection connection) throws IOException {
 		BufferedReader reader = new BufferedReader(
 				new InputStreamReader(connection.getInputStream()));
 		StringBuffer sb = new StringBuffer();
@@ -125,3 +140,4 @@ public class ChatClient {
 	}
 	
 }
+

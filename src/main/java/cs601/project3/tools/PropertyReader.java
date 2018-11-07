@@ -57,6 +57,12 @@ public class PropertyReader {
 	}
 
 	
+	/**
+	 * read a string value associated with a key, if failed, give a defaultValue
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 */
 	public String readStringValue( String key, String defaultValue ) {
 		String value = props.getProperty( key, defaultValue );
 		if ( value == null || value.isEmpty() ) {
@@ -65,6 +71,12 @@ public class PropertyReader {
 		return value;
 	}
 	
+	/**
+	 * read a value associated with a key and try to turn it into an integer, if failed, give a defaultValue
+	 * @param key
+	 * @param defaultValue
+	 * @return
+	 */
 	public int readIntValue(String key, int defaultValue) {
 		String value = readStringValue( key, "" );
 		int result = defaultValue;

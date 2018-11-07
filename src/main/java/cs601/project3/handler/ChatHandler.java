@@ -12,7 +12,6 @@ import org.apache.log4j.PropertyConfigurator;
 import cs601.project3.AmazonSearch;
 import cs601.project3.HTTPServer;
 import cs601.project3.HttpConnection;
-import cs601.project3.StaticFileHandler;
 import cs601.project3.chat.ChatClient;
 import cs601.project3.server.HttpRequest;
 import cs601.project3.server.HttpResponse;
@@ -24,12 +23,11 @@ import cs601.project3.server.HttpResponse;
  */
 public class ChatHandler implements Handler{
 	private static Logger logger = Logger.getLogger(ChatHandler.class);
+	private String webRoot;
+	private StaticFileHandler staticFileHandler;
 	static {
 		PropertyConfigurator.configure("./config/log4j.properties");
 	}
-	
-	private String webRoot;
-	private StaticFileHandler staticFileHandler;
 	
 	public ChatHandler(String webRoot) {
 		super();
@@ -60,11 +58,7 @@ public class ChatHandler implements Handler{
 	 * @param resp
 	 */
 	public void doGet(HttpRequest req, HttpResponse resp) {
-//		req.setMethod("GET");
-//		req.setPath("/chat.html");
-//		resp.setResponseHeader("HTTP/1.0 200 OK\nConnection: close\n\r\n");
-//		staticFileHandler.handle(req, resp);
-		HttpConnection.turnToStaticFile200OK(req, resp, "/chat.html", staticFileHandler);
+		StaticFileHandler.turnToStaticFile200OK(req, resp, "/chat.html", staticFileHandler);
 	}
 	
 	/**
@@ -77,7 +71,7 @@ public class ChatHandler implements Handler{
 	public void doPost(HttpRequest req, HttpResponse resp) {
 		String message = req.getPostData().get("message");
 		if(message == null) {
-			HttpConnection.turnTo400Page(resp, staticFileHandler);
+			StaticFileHandler.turnTo400Page(resp, staticFileHandler);
 			return;
 		}
 		try {
@@ -88,6 +82,7 @@ public class ChatHandler implements Handler{
 		ChatClient chatClient = new ChatClient();
 		logger.info("decode message for slack: " + message);
 		List<String> params = new ArrayList<>();
+		//adding an appropriate response message from slack API into the webPage to show it to the users
 		String display = "<h2>";
 		try {
 			String status = chatClient.sendMessage(message);
@@ -105,6 +100,6 @@ public class ChatHandler implements Handler{
 		params.add(display);
 		StaticFileHandler sfHandler = new StaticFileHandler(webRoot);
 		sfHandler.setParams(params);
-		HttpConnection.turnToStaticFile200OK(req, resp, "/chat.html", sfHandler);
+		StaticFileHandler.turnToStaticFile200OK(req, resp, "/chat.html", sfHandler);
 	}
 }

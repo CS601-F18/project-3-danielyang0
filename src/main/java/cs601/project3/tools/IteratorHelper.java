@@ -3,8 +3,17 @@ package cs601.project3.tools;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
+/**
+ * a iterator helper class responsible for combining iterator, and paging method 
+ * @author yangzun
+ *
+ */
 public class IteratorHelper {
+	/**
+	 * combine two iterator to one
+	 * @param iters
+	 * @return
+	 */
 	public static Iterator<String> combineMultipleIterator(List<Iterator<String>> iters) {
 		if(iters == null) return null;
 		int sz = iters.size();
@@ -35,7 +44,13 @@ public class IteratorHelper {
 		
 	}
 	
-	
+	/**
+	 * method for returning only the contents for the page specified 
+	 * @param iter the iterator representing all the data
+	 * @param linesPerPage how many entries per page
+	 * @param page the page number 
+	 * @return
+	 */
 	public static List<String[]> toList(Iterator<String> iter, int linesPerPage, int page) {
 		if(linesPerPage <= 0 ) {
 			linesPerPage = 30;
@@ -49,11 +64,6 @@ public class IteratorHelper {
 		String[] pageInfo = new String[3];
 		firstPage.add(pageInfo);
 		results.add(pageInfo);
-//		if(page == 1) {
-//			pageInfo[0] = null;
-//		}else{
-//			pageInfo[0] = (page-1) + "";
-//		}
 		int count = 0;
 		boolean hasAtLeastTwoPage = false;
 		while(iter.hasNext()){

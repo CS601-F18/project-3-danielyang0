@@ -9,14 +9,18 @@ import org.apache.log4j.PropertyConfigurator;
 
 import cs601.project3.HTTPServer;
 
+/**
+ * builder for http request object
+ * @author yangzun
+ *
+ */
 public class HttpRequestBuilder {
 	
 	private static Logger logger = Logger.getLogger(HTTPServer.class);
+	private HttpRequest req;
 	static {
 		PropertyConfigurator.configure("./config/log4j.properties");
 	}
-	
-	private HttpRequest req;
 	
 	public HttpRequestBuilder() {
 		req = new HttpRequest();

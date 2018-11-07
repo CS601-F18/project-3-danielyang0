@@ -1,7 +1,5 @@
 package cs601.project3.server;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,8 +8,11 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
-import cs601.project3.HTTPServer;
-
+/**
+ * http request class for storing request information, check validity
+ * @author yangzun
+ *
+ */
 public class HttpRequest {
 	
 	private String requestLines = null;
@@ -23,7 +24,6 @@ public class HttpRequest {
 	private Map<String,String> headerLinesMap = null;
 	private boolean contentLengthConsistent;
 	private Boolean requestAndHeaderLinesValid;
-	private boolean keepAlive;
 	private Integer contentLength;
 	private Map<String, String> postData;
 	private static List<String> supportedHttpMethod;
@@ -36,6 +36,11 @@ public class HttpRequest {
 		supportedHttpMethod.add("POST");
 	}
 	
+	/**
+	 * check params like "a=1&b=2&c=3" are well formated
+	 * @param params
+	 * @return
+	 */
 	private boolean paramsCheckAndSet(String params) {
 		paramsMap = splitKeyValues(params,"&","=",false,true, true);
 		boolean res = paramsMap != null && !paramsMap.isEmpty();
@@ -45,6 +50,11 @@ public class HttpRequest {
 		return res;
 	}
 	
+	/**
+	 * check if path formate is invalid
+	 * @param path
+	 * @return
+	 */
 	private boolean pathCheckAndSet(String path) {
 		if(!path.startsWith("/")) {
 			logger.info("path should start with /");
@@ -54,6 +64,11 @@ public class HttpRequest {
 		return true;
 	}
 	
+	/**
+	 * check if protocol correct
+	 * @param protocol
+	 * @return
+	 */
 	private boolean protocolCheckAndSet(String protocol) {
 		String[] splited = protocol.split("/");
 		if(splited.length != 2) {
@@ -74,29 +89,19 @@ public class HttpRequest {
 		return true;
 	}
 	
-	
+	/**
+	 * split headerLines and set into map
+	 * @return
+	 */
 	private boolean headerLinesCheckAndSet() {
 		headerLinesMap = splitKeyValues(headerLines, "\n", ":", true, true, false);
 		return headerLinesMap != null && !headerLinesMap.isEmpty();
-//		String[] lines = headerLines.split("\n");
-//		for (String line : lines) {
-//			if(line.toUpperCase().startsWith("CONNECTION")) {
-//				if(line.toUpperCase().substring("CONNECTION: ".length()).equals("keep-alive")) {
-//					req.setKeepAlive(true);
-//				}
-//			}else if(line.toUpperCase().startsWith("CONTENT-LENGTH: ")) {
-//				try{
-//					req.setContentLength(Integer.parseInt(line.substring("CONTENT-LENGTH: ".length())));
-//				}catch(NumberFormatException e) {
-//				}
-//			}
-//		}
 	}
 	
-//	private boolean isHeaderLineValid() {
-//		if(!headerLinesCheckAndSet()) return false;
-//		
-//	}
+	/**
+	 * an overall method for checking if the requestLine is valid
+	 * @return
+	 */
 	private boolean isRequestLineValid() {
 		if(requestLines == null) {
 			logger.info("<<<requestLine is null");
@@ -126,11 +131,15 @@ public class HttpRequest {
 		return true;
 	}
 
-	
+	/**
+	 * an overrall method for checking if this request is valid or not
+	 * @return
+	 */
 	public boolean isValid() {
 		if(!isRequestAndHeaderLinesValid()) {
 			return false;
 		}
+		//check the consistency of post body if method is "POST"
 		if("POST".equals(getMethod())) {
 			return isContentLengthConsistent() && postData != null;
 		}
@@ -138,6 +147,10 @@ public class HttpRequest {
 		
 	}
 	
+	/**
+	 * check if request and headerlines are valid
+	 * @return
+	 */
 	public boolean isRequestAndHeaderLinesValid() {
 		if(requestAndHeaderLinesValid != null) return requestAndHeaderLinesValid;
 		if(!isRequestLineValid() || !headerLinesCheckAndSet()) {
@@ -156,13 +169,6 @@ public class HttpRequest {
 			}
 		}
 		return true;
-				
-//		if(protocol == null) return false;
-//		if(!protocol.startsWith("HTTP/1.1") && !protocol.startsWith("HTTP/1.0")) {
-//			return false;
-//		}
-//		if(!path.startsWith("/")) return false;
-//		return true;
 	}
 	
 	
@@ -171,41 +177,26 @@ public class HttpRequest {
 		postData = new HashMap<>();
 	}
 
-	public static String decodeUrl(String encodedString) throws UnsupportedEncodingException {
-		return URLDecoder.decode(encodedString, "UTF-8");
-	}
-	
+	/**
+	 * split body and set postData map
+	 * @param postDataStr
+	 */
 	public void setPostData(String postDataStr) {
 		postData = splitKeyValues(postDataStr, "&", "=", false,false,true);
 		logger.debug("=====set postData Map: \n" + postData);
-//		String[] kvs = postDataStr.split("&");
-//		for (String kv : kvs) {
-//			String[] splited = kv.split("=");
-//			if(splited.length == 2) {
-//				String decodedKey = null;
-//				String decodedValue = null;
-//				try {
-//					decodedKey = decodeUrl(splited[0]);
-//					decodedValue = decodeUrl(splited[1]);
-//				} catch (UnsupportedEncodingException e) {
-//				}
-//				
-//				if(decodedKey == null) {
-//					logger.warn("post data" + splited[0] + "decode url failed!");
-//				}
-//				if(decodedValue == null) {
-//					logger.warn("post data" + splited[1] + "decode url failed!");
-//				}
-//				if(decodedKey == null || decodedValue == null) {
-//					break;
-//				}
-//				logger.info("====post key and value: "+decodedKey + ": "+decodedValue);
-//				postData.put(decodedKey, decodedValue);
-//			}
-//		}
 	}
 	
-	
+	/**
+	 * a helper method for split key values groups
+	 * can be used for url params, or requestLines, or post data strings
+	 * @param kVGroupsString
+	 * @param splitToken
+	 * @param equalSign the equal sign. for example, "=" for string like "a=1&b=2"
+	 * @param toUpperCase will strings be turned into uppercase before storing
+	 * @param isTrim wiil trim?
+	 * @param strict strict mode means a string like "a=1=1&b=2" will be considered invalid
+	 * @return
+	 */
 	private HashMap<String, String> splitKeyValues(String kVGroupsString, String splitToken, String equalSign, boolean toUpperCase,boolean isTrim, boolean strict) {
 		if(kVGroupsString == null) {
 			return null;
@@ -255,18 +246,13 @@ public class HttpRequest {
 		logger.info("splited key values into map:\n" + res);
 		return res;
 	}
+	
 	public boolean isMethodSupported() {
 		boolean supported = supportedHttpMethod.contains(method);
 		if(!supported) logger.info(getMethod() + " method not supported");
 		return supported;
 	}
 	
-	public boolean getKeepAlive() {
-		return keepAlive;
-	}
-	public void setKeepAlive(boolean keepAlive) {
-		this.keepAlive = keepAlive;
-	}
 	public Integer getContentLength() {
 		return contentLength;
 	}
@@ -321,7 +307,6 @@ public class HttpRequest {
 	public String getHeaderLines() {
 		return headerLines;
 	}
-
 
 	public void setHeaderLines(String headerLines) {
 		this.headerLines = headerLines;

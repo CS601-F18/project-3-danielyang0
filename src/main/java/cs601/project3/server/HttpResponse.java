@@ -3,8 +3,13 @@ package cs601.project3.server;
 import java.io.OutputStream;
 
 import cs601.project3.HTTPServer;
-import cs601.project3.StaticFileHandler;
+import cs601.project3.handler.StaticFileHandler;
 
+/**
+ * reponse data structure, containing the writer to the socket
+ * @author yangzun
+ *
+ */
 public class HttpResponse {
 
 	private String responseHeader;
