@@ -45,8 +45,8 @@ public class ChatClient {
 		logger.debug("prepare to send message to slack: " + msg);
 		//POST https://slack.com/api/chat.postMessage
 		//Content-type: application/json
-		//Authorization: Bearer xoxp-378520430422-399500190231-469474756640-3510da3d2f507e447bc3a8f0783ffdf1
-		//{"channel":"project3","text":"zun yang"}
+		//Authorization: refer to notes
+		//example {"channel":"project3","text":"some text"}
 		
 		//create URL object
 		URL url = new URL(reader.readStringValue("slackPostMsgUrl", "https://slack.com/api/chat.postMessage"));
